@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <main className="flex flex-col space-y-5 place-self-center">
       <h1 className="font-believe-heart text-center text-3xl md:text-5xl">
-        BubblyBooth
+        PhotoBooth
       </h1>
       <Dialog>
         <DialogTrigger asChild>
@@ -77,9 +77,9 @@ export default function Home() {
             </Button> */}
           </div>
         </div>
-        <div className="mx-auto w-[250px] md:w-[350px]">
+        {/* <div className="mx-auto w-[250px] md:w-[350px]">
           <Image src={hero} alt="" />
-        </div>
+        </div> */}
       </div>
     </main>
   );

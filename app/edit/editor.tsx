@@ -57,11 +57,6 @@ export const Editor = () => {
         }),
       );
 
-      // Add explicit timeout to detect silent failures
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Dom-to-image timed out")), 10000),
-      );
-
       const scale = 2; // Double the size
 
       // Create options object
