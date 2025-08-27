@@ -11,7 +11,7 @@ import { Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
-import Link from "next/link";
+// import Link from "next/link";
 import { navigateTo } from "./lib/navigation";
 
 export default function Home() {
