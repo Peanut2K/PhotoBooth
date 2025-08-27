@@ -1,7 +1,7 @@
 "use client";
 
 import { SyntheticEvent, useEffect, useState } from "react";
-// import { useImagesStore } from "@/providers/images-store-provider";
+import { useImagesStore } from "@/providers/images-store-provider";
 import cake2 from "@/public/default/Cake2.png";
 import chat1 from "@/public/default/chat1.png";
 import oat1 from "@/public/default/oat1.png";
@@ -9,7 +9,7 @@ import cake3 from "@/public/default/Cake3.png";
 import HBD from "@/public/default/HBD.png";
 
 export const DefaultStickers = () => {
-  // const { images } = useImagesStore((store) => store);
+  const { images } = useImagesStore((store) => store);
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
   const [, setLoadedCount] = useState(0);
 
@@ -49,6 +49,7 @@ export const DefaultStickers = () => {
   // Preload PNG images when component mounts
   useEffect(() => {
     const imagesToPreload = [chat1, oat1, cake2, cake3, HBD];
+    let loadedImages = 0;
 
     const preloadPromises = imagesToPreload.map((img, index) => {
       return new Promise<void>((resolve) => {
@@ -60,21 +61,51 @@ export const DefaultStickers = () => {
 
         image.onload = () => {
           console.log(`Preloaded: ${imageName}`);
+          loadedImages++;
+
+          // If all images are preloaded, set them as loaded immediately
+          if (loadedImages === 5) {
+            console.log("All images preloaded, setting as loaded");
+            setAllImagesLoaded(true);
+            setLoadedCount(5);
+          }
+
           resolve();
         };
         image.onerror = (e) => {
           console.error(`Failed to preload: ${imageName}`, e);
-          resolve(); // Still resolve to not block other images
+          loadedImages++;
+
+          // Still count failed images to prevent infinite waiting
+          if (loadedImages === 5) {
+            console.log(
+              "All images processed (some failed), setting as loaded",
+            );
+            setAllImagesLoaded(true);
+            setLoadedCount(5);
+          }
+
+          resolve();
         };
 
         // Fallback timeout
-        setTimeout(resolve, 5000);
+        setTimeout(() => {
+          if (loadedImages < 5) {
+            loadedImages++;
+            if (loadedImages === 5) {
+              console.log("Timeout reached, setting as loaded");
+              setAllImagesLoaded(true);
+              setLoadedCount(5);
+            }
+          }
+          resolve();
+        }, 3000); // Reduced timeout
       });
     });
 
     // Wait for all images to preload
     Promise.all(preloadPromises).then(() => {
-      console.log("All default stickers preloaded");
+      console.log("All default stickers preload promises resolved");
     });
   }, []);
 
@@ -87,7 +118,7 @@ export const DefaultStickers = () => {
   });
 
   return (
-    <div style={{ opacity: allImagesLoaded ? 1 : 0 }}>
+    <div style={{ opacity: allImagesLoaded && images.length > 0 ? 1 : 0 }}>
       <img
         src={getSrc(chat1)}
         alt=""

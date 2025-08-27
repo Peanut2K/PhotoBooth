@@ -27,17 +27,23 @@ export const PandaStickers = () => {
 
   return (
     <div>
-      <img src={getSrc(panda1)} alt="" className="absolute top-4 w-12" />
-      <img
-        src={getSrc(panda2)}
-        alt=""
-        className="absolute top-20 right-6 w-12"
-      />
-      <img
-        src={getSrc(panda3)}
-        alt=""
-        className="absolute top-40 left-6 w-12"
-      />
+      {images.length > 0 && (
+        <img src={getSrc(panda1)} alt="" className="absolute top-4 w-12" />
+      )}
+      {images.length > 0 && (
+        <img
+          src={getSrc(panda2)}
+          alt=""
+          className="absolute top-20 right-6 w-12"
+        />
+      )}
+      {images.length > 0 && (
+        <img
+          src={getSrc(panda3)}
+          alt=""
+          className="absolute top-40 left-6 w-12"
+        />
+      )}
       {!isLessThanTwoImages && (
         <img
           src={getSrc(panda4)}

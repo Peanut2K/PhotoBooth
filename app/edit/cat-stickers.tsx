@@ -17,25 +17,53 @@ export const CatStickers = () => {
 
   const isLessThanTwoImages = images.length < 2;
   const isLessThanThreeImages = images.length < 3;
-  
+
   // Helper function to get the correct src
   const getSrc = (importedAsset: string | { src: string }) => {
-    return typeof importedAsset === 'string' ? importedAsset : importedAsset.src;
+    return typeof importedAsset === "string"
+      ? importedAsset
+      : importedAsset.src;
   };
-  
+
   return (
     <div>
-      <img src={getSrc(cat1)} alt="" className="absolute top-4 w-12" />
-      <img src={getSrc(cat2)} alt="" className="absolute top-20 right-6 w-12" />
-      <img src={getSrc(cat3)} alt="" className="absolute top-40 left-6 w-12" />
-      {!isLessThanTwoImages && (
-        <img src={getSrc(cat4)} alt="" className="absolute top-60 right-6 w-12" />
+      {images.length > 0 && (
+        <img src={getSrc(cat1)} alt="" className="absolute top-4 w-12" />
+      )}
+      {images.length > 0 && (
+        <img
+          src={getSrc(cat2)}
+          alt=""
+          className="absolute top-20 right-6 w-12"
+        />
+      )}
+      {images.length > 0 && (
+        <img
+          src={getSrc(cat3)}
+          alt=""
+          className="absolute top-40 left-6 w-12"
+        />
       )}
       {!isLessThanTwoImages && (
-        <img src={getSrc(cat5)} alt="" className="absolute top-80 left-6 w-12" />
+        <img
+          src={getSrc(cat4)}
+          alt=""
+          className="absolute top-60 right-6 w-12"
+        />
       )}
       {!isLessThanTwoImages && (
-        <img src={getSrc(cat6)} alt="" className="absolute top-96 left-32 w-12" />
+        <img
+          src={getSrc(cat5)}
+          alt=""
+          className="absolute top-80 left-6 w-12"
+        />
+      )}
+      {!isLessThanTwoImages && (
+        <img
+          src={getSrc(cat6)}
+          alt=""
+          className="absolute top-96 left-32 w-12"
+        />
       )}
       {!isLessThanThreeImages && (
         <img
@@ -45,11 +73,25 @@ export const CatStickers = () => {
         />
       )}
       {!isLessThanThreeImages && (
-        <img src={getSrc(cat8)} alt="" className="absolute bottom-36 left-6 w-12" />
+        <img
+          src={getSrc(cat8)}
+          alt=""
+          className="absolute bottom-36 left-6 w-12"
+        />
       )}
-      <img src={getSrc(cat9)} alt="" className="absolute right-6 bottom-18 w-12" />
+      {images.length > 0 && (
+        <img
+          src={getSrc(cat9)}
+          alt=""
+          className="absolute right-6 bottom-18 w-12"
+        />
+      )}
       {!isLessThanTwoImages && (
-        <img src={getSrc(cat10)} alt="" className="absolute bottom-8 left-6 w-12" />
+        <img
+          src={getSrc(cat10)}
+          alt=""
+          className="absolute bottom-8 left-6 w-12"
+        />
       )}
     </div>
   );
