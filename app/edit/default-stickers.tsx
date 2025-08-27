@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 // import { useImagesStore } from "@/providers/images-store-provider";
 import cake2 from "@/public/default/Cake2.png";
 import chat1 from "@/public/default/chat1.png";
@@ -10,6 +10,8 @@ import HBD from "@/public/default/HBD.png";
 
 export const DefaultStickers = () => {
   // const { images } = useImagesStore((store) => store);
+  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
 
   // const isLessThanTwoImages = images.length < 2;
   // const isLessThanThreeImages = images.length < 3;
@@ -20,26 +22,51 @@ export const DefaultStickers = () => {
       : importedAsset.src;
   };
 
+  const handleImageLoad = (imageName: string) => {
+    console.log(`${imageName} loaded successfully`);
+    setLoadedImages(prev => {
+      const newSet = new Set(prev);
+      newSet.add(imageName);
+      
+      // Check if all 5 images are loaded
+      if (newSet.size === 5) {
+        setAllImagesLoaded(true);
+        console.log("All default stickers loaded successfully!");
+      }
+      
+      return newSet;
+    });
+  };
+
+  const handleImageError = (imageName: string, e: any) => {
+    console.error(`${imageName} failed to load:`, e);
+    // Still count as "loaded" to prevent infinite waiting
+    handleImageLoad(imageName);
+  };
+
   // Preload PNG images when component mounts
   useEffect(() => {
     const imagesToPreload = [chat1, oat1, cake2, cake3, HBD];
 
-    const preloadPromises = imagesToPreload.map((img) => {
+    const preloadPromises = imagesToPreload.map((img, index) => {
       return new Promise<void>((resolve) => {
         const image = new Image();
         image.crossOrigin = "anonymous";
         image.src = getSrc(img);
+        
+        const imageName = ['chat1', 'oat1', 'cake2', 'cake3', 'HBD'][index];
+        
         image.onload = () => {
-          console.log(`Preloaded: ${image.src}`);
+          console.log(`Preloaded: ${imageName}`);
           resolve();
         };
         image.onerror = (e) => {
-          console.error(`Failed to preload: ${image.src}`, e);
+          console.error(`Failed to preload: ${imageName}`, e);
           resolve(); // Still resolve to not block other images
         };
 
         // Fallback timeout
-        setTimeout(resolve, 3000);
+        setTimeout(resolve, 5000);
       });
     });
 
@@ -58,15 +85,16 @@ export const DefaultStickers = () => {
   });
 
   return (
-    <div>
+    <div style={{ opacity: allImagesLoaded ? 1 : 0 }}>
       <img
         src={getSrc(chat1)}
         alt=""
         crossOrigin="anonymous"
         loading="eager"
-        className="absolute top-20 right-1 w-40"
-        onLoad={() => console.log("chat1 loaded")}
-        onError={(e) => console.error("chat1 failed to load:", e)}
+        className="absolute top-90 right-1 w-40"
+        onLoad={() => handleImageLoad('chat1')}
+        onError={(e) => handleImageError('chat1', e)}
+        style={{ display: 'block' }}
       />
       <img
         src={getSrc(oat1)}
@@ -74,8 +102,9 @@ export const DefaultStickers = () => {
         crossOrigin="anonymous"
         loading="eager"
         className="absolute top-40 left-0 w-40"
-        onLoad={() => console.log("oat1 loaded")}
-        onError={(e) => console.error("oat1 failed to load:", e)}
+        onLoad={() => handleImageLoad('oat1')}
+        onError={(e) => handleImageError('oat1', e)}
+        style={{ display: 'block' }}
       />
       <img
         src={getSrc(cake2)}
@@ -83,8 +112,9 @@ export const DefaultStickers = () => {
         crossOrigin="anonymous"
         loading="eager"
         className="absolute bottom-8 left-6 w-12"
-        onLoad={() => console.log("cake2 loaded")}
-        onError={(e) => console.error("cake2 failed to load:", e)}
+        onLoad={() => handleImageLoad('cake2')}
+        onError={(e) => handleImageError('cake2', e)}
+        style={{ display: 'block' }}
       />
       <img
         src={getSrc(cake3)}
@@ -92,17 +122,19 @@ export const DefaultStickers = () => {
         crossOrigin="anonymous"
         loading="eager"
         className="absolute right-6 bottom-8 w-12"
-        onLoad={() => console.log("cake3 loaded")}
-        onError={(e) => console.error("cake3 failed to load:", e)}
+        onLoad={() => handleImageLoad('cake3')}
+        onError={(e) => handleImageError('cake3', e)}
+        style={{ display: 'block' }}
       />
       <img
         src={getSrc(HBD)}
         alt=""
         crossOrigin="anonymous"
         loading="eager"
-        className="absolute right-10 bottom-32 w-60"
-        onLoad={() => console.log("HBD loaded")}
-        onError={(e) => console.error("HBD failed to load:", e)}
+        className="absolute right-10 bottom-135 w-60"
+        onLoad={() => handleImageLoad('HBD')}
+        onError={(e) => handleImageError('HBD', e)}
+        style={{ display: 'block' }}
       />
     </div>
   );

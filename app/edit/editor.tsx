@@ -43,6 +43,38 @@ export const Editor = () => {
       return;
     }
 
+    // Check if default stickers are visible and wait for them to load
+    const defaultStickersElement =
+      elementRef.current.querySelector('[style*="opacity"]');
+    if (defaultStickersElement && stickers === null) {
+      const opacity = window.getComputedStyle(defaultStickersElement).opacity;
+      if (opacity === "0") {
+        console.log("Waiting for default stickers to load...");
+
+        // Wait for stickers to load with timeout
+        let attempts = 0;
+        const maxAttempts = 30; // 15 seconds max wait
+
+        while (attempts < maxAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          const currentOpacity = window.getComputedStyle(
+            defaultStickersElement,
+          ).opacity;
+          if (currentOpacity === "1") {
+            console.log("Default stickers loaded successfully!");
+            break;
+          }
+          attempts++;
+        }
+
+        if (attempts >= maxAttempts) {
+          console.warn(
+            "Timeout waiting for default stickers to load, proceeding anyway...",
+          );
+        }
+      }
+    }
+
     // Add loading indicator
     const loadingIndicator = document.createElement("div");
     loadingIndicator.textContent = "Generating image...";
