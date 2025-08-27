@@ -6,9 +6,9 @@ import Image from "next/image";
 import axolotlIcon from "@/public/axolotl-stickers/happy.svg";
 import catIcon from "@/public/cat-stickers/eat.svg";
 import pandaIcon from "@/public/panda-stickers/happy.svg";
+import fist from "@/public/shared/fist.png";
 import { useFiltersStore } from "@/providers/filters-store-provider";
 import { cn } from "@/lib/utils";
-import { Trash } from "lucide-react";
 
 export const PhotostripStickers = () => {
   const { stickers, setStickers } = useFiltersStore((store) => store);
@@ -56,7 +56,8 @@ export const PhotostripStickers = () => {
           !stickers && "border-2 border-[#72b86d]",
         )}
       >
-        <Trash />
+        <Image src={fist} alt="" className="w-10" />
+        <span className="sr-only">Fist Logo</span>
       </Button>
     </div>
   );

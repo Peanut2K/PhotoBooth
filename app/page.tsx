@@ -1,5 +1,3 @@
-import hero from "@/public/hero.png";
-
 import {
   Dialog,
   DialogContent,
@@ -14,7 +12,7 @@ import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import { navigateTo } from "./lib/navigation";
 
 export default function Home() {
   return (
@@ -24,9 +22,8 @@ export default function Home() {
       </h1>
       <Dialog>
         <DialogTrigger asChild>
-          <Button
-              className=" bg-vintage-green px-8 py-6 text-xl font-bold uppercase text-white">
-            <Mail/> Letter
+          <Button className="bg-vintage-green px-8 py-6 text-xl font-bold text-white uppercase">
+            <Mail /> Letter
           </Button>
         </DialogTrigger>
         <DialogContent className="bg-[#F6F0F0] md:max-w-md">
@@ -46,8 +43,8 @@ export default function Home() {
               your photos to life with a nostalgic yet modern twist.
             </p>
             <p>
-              📷 Snap. Smile. Sparkle. Let&apos;s make memories that last forever—one
-              bubbly click at a time!
+              📷 Snap. Smile. Sparkle. Let&apos;s make memories that last
+              forever—one bubbly click at a time!
             </p>
           </div>
           <DialogFooter className="gap-3">
@@ -59,13 +56,11 @@ export default function Home() {
         <div className="self-center">
           <div className="flex flex-col gap-5">
             <Button
-              asChild
+              onClick={() => navigateTo("/camera")}
               className="bg-vintage-gold px-8 py-6 text-xl font-bold uppercase"
             >
-              <Link href="/camera">
-                <Camera />
-                Let&apos;s Take some Photos 😖
-              </Link>
+              <Camera />
+              Let&apos;s Take some Photos 😖
             </Button>
             {/* <Button
               asChild

@@ -49,6 +49,7 @@ export const Preview = ({
           </DialogDescription>
         </DialogHeader>
         <div
+          key={`preview-${background}-${photostrip}`}
           className="relative mx-auto w-fit p-6"
           style={{ backgroundColor: background }}
         >
@@ -85,7 +86,7 @@ export const Preview = ({
           {stickers === "axolotl" && <AxolotlStickers />}
           {stickers === "cat" && <CatStickers />}
           {stickers === "panda" && <PandaStickers />}
-          {stickers === null && (<DefaultStickers />)}
+          {stickers === null && <DefaultStickers />}
         </div>
       </DialogContent>
     </Dialog>

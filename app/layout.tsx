@@ -29,7 +29,7 @@ const websiteUrl = "https://bubblybooth.vercel.app";
 const imageUrl = "./public/bubblybooth.png";
 
 export const metadata: Metadata = {
-  title: "BubblyBooth - Vintage Photobooth Experience",
+  title: "Happy Birthday !!!",
   description:
     "Step into a world of vintage charm and playful memories! ✨ Bubbly Booth is your go-to photobooth experience, where every snapshot is filled with joy, laughter, and a touch of retro magic. Whether you're celebrating a special occasion or just capturing fun moments with friends, our customizable and aesthetic filters bring your photos to life with a nostalgic yet modern twist. 📷 Snap. Smile. Sparkle. Let's make memories that last forever—one bubbly click at a time!",
   metadataBase: new URL(websiteUrl),

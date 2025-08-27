@@ -12,36 +12,44 @@ import cat8 from "@/public/cat-stickers/sad.svg";
 import cat9 from "@/public/cat-stickers/sing.svg";
 import cat10 from "@/public/cat-stickers/yes.svg";
 
-import Image from "next/image";
-
 export const CatStickers = () => {
   const { images } = useImagesStore((store) => store);
 
   const isLessThanTwoImages = images.length < 2;
   const isLessThanThreeImages = images.length < 3;
+  
+  // Helper function to get the correct src
+  const getSrc = (importedAsset: string | { src: string }) => {
+    return typeof importedAsset === 'string' ? importedAsset : importedAsset.src;
+  };
+  
   return (
     <div>
-      <Image src={cat1} alt="" className="absolute top-4 w-12" />
-      <Image src={cat2} alt="" className="absolute top-20 right-6 w-12" />
-      <Image src={cat3} alt="" className="absolute top-40 left-6 w-12" />
+      <img src={getSrc(cat1)} alt="" className="absolute top-4 w-12" />
+      <img src={getSrc(cat2)} alt="" className="absolute top-20 right-6 w-12" />
+      <img src={getSrc(cat3)} alt="" className="absolute top-40 left-6 w-12" />
       {!isLessThanTwoImages && (
-        <Image src={cat4} alt="" className="absolute top-60 right-6 w-12" />
+        <img src={getSrc(cat4)} alt="" className="absolute top-60 right-6 w-12" />
       )}
       {!isLessThanTwoImages && (
-        <Image src={cat5} alt="" className="absolute top-80 left-6 w-12" />
+        <img src={getSrc(cat5)} alt="" className="absolute top-80 left-6 w-12" />
       )}
       {!isLessThanTwoImages && (
-        <Image src={cat6} alt="" className="absolute top-96 left-32 w-12" />
+        <img src={getSrc(cat6)} alt="" className="absolute top-96 left-32 w-12" />
       )}
       {!isLessThanThreeImages && (
-        <Image src={cat7} alt="" className="absolute right-6 bottom-56 w-12" />
+        <img
+          src={getSrc(cat7)}
+          alt=""
+          className="absolute right-6 bottom-56 w-12"
+        />
       )}
       {!isLessThanThreeImages && (
-        <Image src={cat8} alt="" className="absolute bottom-36 left-6 w-12" />
+        <img src={getSrc(cat8)} alt="" className="absolute bottom-36 left-6 w-12" />
       )}
-      <Image src={cat9} alt="" className="absolute right-6 bottom-18 w-12" />
+      <img src={getSrc(cat9)} alt="" className="absolute right-6 bottom-18 w-12" />
       {!isLessThanTwoImages && (
-        <Image src={cat10} alt="" className="absolute bottom-8 left-6 w-12" />
+        <img src={getSrc(cat10)} alt="" className="absolute bottom-8 left-6 w-12" />
       )}
     </div>
   );
