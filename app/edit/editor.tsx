@@ -121,9 +121,9 @@ export const Editor = () => {
 
           return new Promise<void>((resolve) => {
             const handleLoad = () => {
-              // Longer delay for PNG files to ensure they're fully rendered
+              // Shorter delay for PNG files since preloading is better
               const isPng = img.src.toLowerCase().includes(".png");
-              const delay = isPng ? 300 : 100;
+              const delay = isPng ? 100 : 50;
               setTimeout(resolve, delay);
             };
 
@@ -138,23 +138,23 @@ export const Editor = () => {
               handleLoad();
             }
 
-            // Longer timeout for PNG files
+            // Shorter timeout for PNG files since preloading is improved
             const isPng = img.src.toLowerCase().includes(".png");
-            const timeout = isPng ? 8000 : 5000;
+            const timeout = isPng ? 3000 : 2000;
             setTimeout(resolve, timeout);
           });
         }),
       );
 
-      // Additional delay specifically for PNG stickers
+      // Additional delay specifically for PNG stickers - reduced since we improved preloading
       const hasPngStickers = Array.from(images).some((img) =>
         img.src.toLowerCase().includes(".png"),
       );
 
       if (hasPngStickers) {
-        console.log("PNG stickers detected, adding extra loading time...");
-        // Even longer delay for default stickers (PNG files)
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        console.log("PNG stickers detected, adding minimal loading time...");
+        // Reduced delay since preloading is now better
+        await new Promise((resolve) => setTimeout(resolve, 300));
 
         // Force a repaint/reflow
         elementRef.current.style.transform = "translateZ(0)";
@@ -162,16 +162,17 @@ export const Editor = () => {
         elementRef.current.style.transform = "";
       }
 
-      // Temporarily modify styles for better mobile rendering
+      // Temporarily modify styles for better mobile rendering - improved
       photoStripElement = elementRef.current.querySelector(
         '[style*="boxShadow"]',
       ) as HTMLElement;
 
       if (isMobile && photoStripElement) {
         originalPhotoStripStyle = photoStripElement.style.boxShadow;
-        // Remove problematic box shadow on mobile
-        photoStripElement.style.boxShadow = "none";
-        photoStripElement.style.border = `3px solid ${background}`;
+        // Instead of removing shadow completely, just reduce it
+        photoStripElement.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+        // Remove the border that was causing the shadow box effect
+        // photoStripElement.style.border = `3px solid ${background}`;
       }
 
       const options = {
@@ -194,9 +195,9 @@ export const Editor = () => {
         },
       };
 
-      // Additional mobile delay
+      // Reduced mobile delay since loading is now faster
       if (isMobile) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 200));
       }
 
       // Try multiple times on mobile if needed
