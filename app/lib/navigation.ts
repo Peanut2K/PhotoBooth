@@ -1,8 +1,6 @@
-export const getBasePath = () => {
-  return process.env.NODE_ENV === "production" ? "/PhotoBooth" : "";
-};
+"use client";
 
 export const navigateTo = (path: string) => {
-  const basePath = getBasePath();
-  window.location.href = `${basePath}${path}`;
+  // For Next.js with standard routing (not static export)
+  window.location.href = path;
 };

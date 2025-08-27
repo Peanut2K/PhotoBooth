@@ -11,8 +11,8 @@ import { Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
-// import Link from "next/link";
-import { navigateTo } from "./lib/navigation";
+import Link from "next/link";
+// import { navigateTo } from "./lib/navigation";
 
 export default function Home() {
   return (
@@ -56,11 +56,13 @@ export default function Home() {
         <div className="self-center">
           <div className="flex flex-col gap-5">
             <Button
-              onClick={() => navigateTo("/camera")}
+              asChild
               className="bg-vintage-gold px-8 py-6 text-xl font-bold uppercase"
             >
-              <Camera />
-              Let&apos;s Take some Photos 😖
+              <Link href="/camera">
+                <Camera />
+                Let&apos;s Take some Photos 😖
+              </Link>
             </Button>
             {/* <Button
               asChild
