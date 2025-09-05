@@ -173,7 +173,12 @@ export const Editor = () => {
 
       // Extra delay for mobile to ensure stickers are painted (fixes black/empty image on first try)
       if (isMobile) {
-        await new Promise((resolve) => setTimeout(resolve, 200));
+        // Force a reflow/repaint
+        elementRef.current.style.transform = "scale(1.001)";
+        void elementRef.current.offsetHeight;
+        elementRef.current.style.transform = "";
+        // Wait longer to ensure rendering is complete
+        await new Promise((resolve) => setTimeout(resolve, 500));
       }
 
       // Temporarily modify styles for better mobile rendering - improved
