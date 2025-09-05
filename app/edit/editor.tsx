@@ -21,121 +21,7 @@ export const Editor = () => {
   const { images } = useImagesStore((store) => store);
   const elementRef = useRef<HTMLDivElement>(null);
 
-  const downloadImage = async () => {
-    if (!elementRef.current) {
-      console.error("Element ref is not available");
-      return;
-    }
-    const isMobile =
-      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent,
-      );
-    try {
-      await document.fonts.ready;
-      const images = elementRef.current.querySelectorAll("img");
-      await Promise.all(
-        Array.from(images).map(async (img) => {
-          if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
-          if (!img.crossOrigin) img.crossOrigin = "anonymous";
-          return new Promise<void>((resolve) => {
-            const handleLoad = () => setTimeout(resolve, 100);
-            img.onload = handleLoad;
-            img.onerror = () => resolve();
-            if (img.complete && img.naturalHeight !== 0) handleLoad();
-            setTimeout(resolve, 2000);
-          });
-        }),
-      );
-      if (isMobile) {
-        elementRef.current.style.transform = "scale(1.001)";
-        void elementRef.current.offsetHeight;
-        elementRef.current.style.transform = "";
-        await new Promise((resolve) => setTimeout(resolve, 1200));
-        await new Promise((resolve) => requestAnimationFrame(resolve));
-        await new Promise((resolve) => setTimeout(resolve, 300));
-      }
-      if (isMobile) {
-        const stickersEl = elementRef.current.querySelector('[style*="opacity"]');
-        let stickerAttempts = 0;
-        while (
-          stickersEl &&
-          window.getComputedStyle(stickersEl).opacity !== "1" &&
-          stickerAttempts < 10
-        ) {
-          await new Promise((resolve) => setTimeout(resolve, 200));
-          stickerAttempts++;
-        }
-      }
-      if (isMobile) {
-        elementRef.current.style.transform = "scale(1.0001)";
-        void elementRef.current.offsetHeight;
-        elementRef.current.style.transform = "";
-        await new Promise((resolve) => setTimeout(resolve, 400));
-      }
-      const options = {
-        cacheBust: true,
-        backgroundColor: background,
-        pixelRatio: isMobile ? 1.5 : 2,
-        quality: 0.95,
-        useCORS: true,
-        allowTaint: false,
-        width: elementRef.current.offsetWidth,
-        height: elementRef.current.offsetHeight,
-        style: {
-          visibility: "visible",
-          position: "relative",
-          transform: "none",
-        },
-      };
-      const dataUrl = await toPng(elementRef.current, options);
-      const link = document.createElement("a");
-      link.download = "Happy-Birthday!!!.png";
-      link.href = dataUrl;
-      if (isMobile) {
-        try {
-          const newWindow = window.open();
-          if (newWindow) {
-            newWindow.document.write(
-              `<img src="${dataUrl}" style="max-width:100%;height:auto;" />`,
-            );
-            newWindow.document.title = "Long press to save image";
-          } else {
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          }
-        } catch {
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        }
-      } else {
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    } catch (e) {
-      alert("Failed to generate image. Please try again.");
-      console.error("Error generating image:", e);
-    }
-  };
-
-  const getInsetShadow = (backgroundColor: string) => {
-    return `0px 0px 10px 0px ${backgroundColor}`;
-  };
-
-  if (images.length === 0) {
-    return (
-      <div className="space-y-3 rounded-xl border border-black p-5">
-        <p className="md:text-2xl">Take a picture first!</p>
-        <Button asChild className="w-full md:text-xl">
-          <Link href="/camera">Camera</Link>
-        </Button>
-      </div>
-    );
-  }
-
-  // Safety checks (must be after all hooks)
+  // Safety checks
   if (!photostrip || !background || !filter || images === undefined) {
     console.warn("Store values not properly initialized:", {
       photostrip,
@@ -147,6 +33,282 @@ export const Editor = () => {
     return (
       <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
         <p className="text-yellow-800">Loading editor...</p>
+      </div>
+    );
+  }
+
+  const downloadImage = async () => {
+    if (!elementRef.current) {
+      console.error("Element ref is not available");
+      return;
+    }
+
+    // Check if default stickers are visible and wait for them to load
+    const defaultStickersElement =
+      elementRef.current.querySelector('[style*="opacity"]');
+    if (defaultStickersElement && stickers === null) {
+      const opacity = window.getComputedStyle(defaultStickersElement).opacity;
+      if (opacity === "0") {
+        console.log("Waiting for default stickers to load...");
+
+        // Wait for stickers to load with timeout
+        let attempts = 0;
+        const maxAttempts = 30; // 15 seconds max wait
+
+        while (attempts < maxAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          const currentOpacity = window.getComputedStyle(
+            defaultStickersElement,
+          ).opacity;
+          if (currentOpacity === "1") {
+            console.log("Default stickers loaded successfully!");
+            break;
+          }
+          attempts++;
+        }
+
+        if (attempts >= maxAttempts) {
+          console.warn(
+            "Timeout waiting for default stickers to load, proceeding anyway...",
+          );
+        }
+      }
+    }
+
+    // Add loading indicator
+    const loadingIndicator = document.createElement("div");
+    loadingIndicator.textContent = "Generating image...";
+    loadingIndicator.style.position = "fixed";
+    loadingIndicator.style.top = "50%";
+    loadingIndicator.style.left = "50%";
+    loadingIndicator.style.transform = "translate(-50%, -50%)";
+    loadingIndicator.style.padding = "10px";
+    loadingIndicator.style.backgroundColor = "rgba(0,0,0,0.7)";
+    loadingIndicator.style.color = "white";
+    loadingIndicator.style.borderRadius = "5px";
+    loadingIndicator.style.zIndex = "9999";
+
+    try {
+      document.body.appendChild(loadingIndicator);
+    } catch (error) {
+      console.error("Failed to add loading indicator:", error);
+    }
+
+    // Mobile-specific fixes
+    const isMobile =
+      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      );
+
+    // Variables for style restoration
+    let originalPhotoStripStyle: string | null = null;
+    let photoStripElement: HTMLElement | null = null;
+
+    try {
+      // Make sure all fonts are loaded
+      await document.fonts.ready;
+
+      // Force all images to load completely and handle cross-origin issues
+      const images = elementRef.current.querySelectorAll("img");
+      await Promise.all(
+        Array.from(images).map(async (img) => {
+          if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
+
+          // Set crossOrigin for images
+          if (!img.crossOrigin) {
+            img.crossOrigin = "anonymous";
+          }
+
+          return new Promise<void>((resolve) => {
+            const handleLoad = () => {
+              // Shorter delay for PNG files since preloading is better
+              const isPng = img.src.toLowerCase().includes(".png");
+              const delay = isPng ? 100 : 50;
+              setTimeout(resolve, delay);
+            };
+
+            img.onload = handleLoad;
+            img.onerror = () => {
+              console.warn("Image failed to load:", img.src);
+              resolve();
+            };
+
+            // If image is already loaded but we missed the event
+            if (img.complete && img.naturalHeight !== 0) {
+              handleLoad();
+            }
+
+            // Shorter timeout for PNG files since preloading is improved
+            const isPng = img.src.toLowerCase().includes(".png");
+            const timeout = isPng ? 3000 : 2000;
+            setTimeout(resolve, timeout);
+          });
+        }),
+      );
+
+      // Additional delay specifically for PNG stickers - reduced since we improved preloading
+      const hasPngStickers = Array.from(images).some((img) =>
+        img.src.toLowerCase().includes(".png"),
+      );
+
+      if (hasPngStickers) {
+        console.log("PNG stickers detected, adding minimal loading time...");
+        // Reduced delay since preloading is now better
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        // Force a repaint/reflow
+        elementRef.current.style.transform = "translateZ(0)";
+        void elementRef.current.offsetHeight; // Trigger reflow
+        elementRef.current.style.transform = "";
+      }
+
+      // Temporarily modify styles for better mobile rendering - improved
+      photoStripElement = elementRef.current.querySelector(
+        '[style*="boxShadow"]',
+      ) as HTMLElement;
+
+      if (isMobile && photoStripElement) {
+        originalPhotoStripStyle = photoStripElement.style.boxShadow;
+        // Instead of removing shadow completely, just reduce it
+        photoStripElement.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+        // Remove the border that was causing the shadow box effect
+        // photoStripElement.style.border = `3px solid ${background}`;
+      }
+
+      const options = {
+        cacheBust: true,
+        backgroundColor: background,
+        pixelRatio: isMobile ? 1.5 : 2, // Slightly lower pixel ratio on mobile
+        quality: 0.95,
+        // Mobile-specific options
+        useCORS: true,
+        allowTaint: false,
+        // Add scaling for better mobile performance
+        width: elementRef.current.offsetWidth,
+        height: elementRef.current.offsetHeight,
+        style: {
+          // Force visibility and positioning
+          visibility: "visible",
+          position: "relative",
+          // Ensure transforms don't interfere
+          transform: "none",
+        },
+      };
+
+      // Reduced mobile delay since loading is now faster
+      if (isMobile) {
+        await new Promise((resolve) => setTimeout(resolve, 200));
+      }
+
+      // Try multiple times on mobile if needed
+      let dataUrl;
+      let attempts = 0;
+      const maxAttempts = isMobile ? 3 : 1;
+
+      while (attempts < maxAttempts) {
+        try {
+          dataUrl = await toPng(elementRef.current, options);
+
+          // Check if we got a valid data URL
+          if (
+            dataUrl &&
+            typeof dataUrl === "string" &&
+            dataUrl.startsWith("data:")
+          ) {
+            break;
+          }
+          throw new Error("Invalid data URL returned");
+        } catch (attemptError) {
+          attempts++;
+          if (attempts >= maxAttempts) {
+            throw attemptError;
+          }
+          // Wait before retry
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
+
+      // Create download link
+      const link = document.createElement("a");
+      link.download = "Happy-Birthday!!!.png";
+      link.href = dataUrl ? dataUrl : "";
+
+      // Mobile download handling
+      if (isMobile) {
+        // For mobile, try to open in new window first
+        try {
+          const newWindow = window.open();
+          if (newWindow) {
+            newWindow.document.write(
+              `<img src="${dataUrl}" style="max-width:100%;height:auto;" />`,
+            );
+            newWindow.document.title = "Long press to save image";
+          } else {
+            // Fallback to regular download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+        } catch (popupError) {
+          // Final fallback
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          console.error("Popup blocked, fallback to download", popupError);
+        }
+      } else {
+        // Desktop download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      console.log("Image download initiated successfully");
+
+      // Restore original styles
+      if (isMobile && photoStripElement && originalPhotoStripStyle !== null) {
+        photoStripElement.style.boxShadow = originalPhotoStripStyle;
+        photoStripElement.style.border = "none";
+      }
+    } catch (error) {
+      console.error("Error generating image:", error);
+
+      // More specific error message
+      const isMobile =
+        /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent,
+        );
+      const errorMessage = isMobile
+        ? "Failed to generate image on mobile. Try taking a screenshot instead, or use a desktop browser for better results."
+        : "Failed to generate image. Please refresh your page or try a different browser.";
+
+      alert(errorMessage);
+
+      // Restore original styles in case of error
+      if (isMobile && photoStripElement && originalPhotoStripStyle !== null) {
+        photoStripElement.style.boxShadow = originalPhotoStripStyle;
+        photoStripElement.style.border = "none";
+      }
+    } finally {
+      // Remove loading indicator
+      if (document.body.contains(loadingIndicator)) {
+        document.body.removeChild(loadingIndicator);
+      }
+    }
+  };
+
+  const getInsetShadow = (backgroundColor: string) => {
+    // Use a simpler shadow for better mobile compatibility
+    return `0px 0px 10px 0px ${backgroundColor}`;
+  };
+
+  if (images.length === 0) {
+    return (
+      <div className="space-y-3 rounded-xl border border-black p-5">
+        <p className="md:text-2xl">Take a picture first!</p>
+        <Button asChild className="w-full md:text-xl">
+          <Link href="/camera">Camera</Link>
+        </Button>
       </div>
     );
   }
