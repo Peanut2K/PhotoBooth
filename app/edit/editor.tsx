@@ -178,7 +178,15 @@ export const Editor = () => {
         void elementRef.current.offsetHeight;
         elementRef.current.style.transform = "";
         // Wait longer to ensure rendering is complete
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 800)); // Increased delay
+      }
+
+      // Force another reflow/repaint right before generating the image (mobile only)
+      if (isMobile) {
+        elementRef.current.style.transform = "scale(1.0001)";
+        void elementRef.current.offsetHeight;
+        elementRef.current.style.transform = "";
+        await new Promise((resolve) => setTimeout(resolve, 200));
       }
 
       // Temporarily modify styles for better mobile rendering - improved
