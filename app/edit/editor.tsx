@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useFiltersStore } from "@/providers/filters-store-provider";
@@ -116,6 +116,7 @@ export const Editor = () => {
       }
     } catch (e) {
       alert("Failed to generate image. Please try again.");
+      console.error("Error generating image:", e);
     }
   };
 
