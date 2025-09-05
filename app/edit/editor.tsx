@@ -75,6 +75,15 @@ export const Editor = () => {
       }
     }
 
+    // Extra delay to ensure stickers and images are rendered on mobile
+    const isMobileDelay = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
+    if (isMobileDelay) {
+      // Wait a bit to ensure all stickers/images are painted
+      await new Promise((resolve) => setTimeout(resolve, 350));
+    }
+
     // Add loading indicator
     const loadingIndicator = document.createElement("div");
     loadingIndicator.textContent = "Generating image...";
@@ -160,6 +169,11 @@ export const Editor = () => {
         elementRef.current.style.transform = "translateZ(0)";
         void elementRef.current.offsetHeight; // Trigger reflow
         elementRef.current.style.transform = "";
+      }
+
+      // Extra delay for mobile to ensure stickers are painted (fixes black/empty image on first try)
+      if (isMobile) {
+        await new Promise((resolve) => setTimeout(resolve, 200));
       }
 
       // Temporarily modify styles for better mobile rendering - improved
