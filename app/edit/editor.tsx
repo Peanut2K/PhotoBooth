@@ -20,13 +20,12 @@ export const Editor = () => {
     useFiltersStore((store) => store);
   const { images } = useImagesStore((store) => store);
   const elementRef = useRef<HTMLDivElement>(null);
-  const [readyImage, setReadyImage] = useState<string | null>(null);
-  const [, setIsGenerating] = useState(false);
 
-  // Helper to generate image in background
-  const generateImage = async () => {
-    if (!elementRef.current) return;
-    setIsGenerating(true);
+  const downloadImage = async () => {
+    if (!elementRef.current) {
+      console.error("Element ref is not available");
+      return;
+    }
     const isMobile =
       /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent,
@@ -37,69 +36,24 @@ export const Editor = () => {
       await Promise.all(
         Array.from(images).map(async (img) => {
           if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
-          // Set crossOrigin for images
-          if (!img.crossOrigin) {
-            img.crossOrigin = "anonymous";
-          }
-
+          if (!img.crossOrigin) img.crossOrigin = "anonymous";
           return new Promise<void>((resolve) => {
-            const handleLoad = () => {
-              // Shorter delay for PNG files since preloading is better
-              const isPng = img.src.toLowerCase().includes(".png");
-              const delay = isPng ? 100 : 50;
-              setTimeout(resolve, delay);
-            };
-
+            const handleLoad = () => setTimeout(resolve, 100);
             img.onload = handleLoad;
-            img.onerror = () => {
-              console.warn("Image failed to load:", img.src);
-              resolve();
-            };
-
-            // If image is already loaded but we missed the event
-            if (img.complete && img.naturalHeight !== 0) {
-              handleLoad();
-            }
-
-            // Shorter timeout for PNG files since preloading is improved
-            const isPng = img.src.toLowerCase().includes(".png");
-            const timeout = isPng ? 3000 : 2000;
-            setTimeout(resolve, timeout);
+            img.onerror = () => resolve();
+            if (img.complete && img.naturalHeight !== 0) handleLoad();
+            setTimeout(resolve, 2000);
           });
         }),
       );
-
-      // Additional delay specifically for PNG stickers - reduced since we improved preloading
-      const hasPngStickers = Array.from(images).some((img) =>
-        img.src.toLowerCase().includes(".png"),
-      );
-
-      if (hasPngStickers) {
-        console.log("PNG stickers detected, adding minimal loading time...");
-        // Reduced delay since preloading is now better
-        await new Promise((resolve) => setTimeout(resolve, 300));
-
-        // Force a repaint/reflow
-        elementRef.current.style.transform = "translateZ(0)";
-        void elementRef.current.offsetHeight; // Trigger reflow
-        elementRef.current.style.transform = "";
-      }
-
-      // Extra delay for mobile to ensure stickers are painted (fixes black/empty image on first try)
       if (isMobile) {
-        // Force a reflow/repaint
         elementRef.current.style.transform = "scale(1.001)";
         void elementRef.current.offsetHeight;
         elementRef.current.style.transform = "";
-        // Wait even longer to ensure rendering is complete
         await new Promise((resolve) => setTimeout(resolve, 1200));
-        // Force a full repaint using requestAnimationFrame
         await new Promise((resolve) => requestAnimationFrame(resolve));
-        // Wait a bit more
         await new Promise((resolve) => setTimeout(resolve, 300));
       }
-
-      // Wait for stickers to be visible (opacity 1)
       if (isMobile) {
         const stickersEl = elementRef.current.querySelector('[style*="opacity"]');
         let stickerAttempts = 0;
@@ -112,94 +66,60 @@ export const Editor = () => {
           stickerAttempts++;
         }
       }
-
-      // Force another reflow/repaint and longer delay right before generating the image (mobile only)
       if (isMobile) {
         elementRef.current.style.transform = "scale(1.0001)";
         void elementRef.current.offsetHeight;
         elementRef.current.style.transform = "";
         await new Promise((resolve) => setTimeout(resolve, 400));
       }
-
       const options = {
         cacheBust: true,
         backgroundColor: background,
-        pixelRatio: isMobile ? 1.5 : 2, // Slightly lower pixel ratio on mobile
+        pixelRatio: isMobile ? 1.5 : 2,
         quality: 0.95,
-        // Mobile-specific options
         useCORS: true,
         allowTaint: false,
-        // Add scaling for better mobile performance
         width: elementRef.current.offsetWidth,
         height: elementRef.current.offsetHeight,
         style: {
-          // Force visibility and positioning
           visibility: "visible",
           position: "relative",
-          // Ensure transforms don't interfere
           transform: "none",
         },
       };
-
       const dataUrl = await toPng(elementRef.current, options);
-      setReadyImage(dataUrl);
-    } catch (e) {
-      setReadyImage(null);
-      console.error("Error generating image:", e);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  // Regenerate image when dependencies change
-  useEffect(() => {
-    if (images.length > 0) {
-      generateImage();
-    } else {
-      setReadyImage(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [photostrip, background, filter, dateEnabled, stickers, images]);
-
-  const downloadImage = async () => {
-    if (!readyImage) {
-      alert("Image is not ready yet. Please wait a moment and try again.");
-      return;
-    }
-    const isMobile =
-      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent,
-      );
-    const link = document.createElement("a");
-    link.download = "Happy-Birthday!!!.png";
-    link.href = readyImage;
-    if (isMobile) {
-      try {
-        const newWindow = window.open();
-        if (newWindow) {
-          newWindow.document.write(
-            `<img src="${readyImage}" style="max-width:100%;height:auto;" />`,
-          );
-          newWindow.document.title = "Long press to save image";
-        } else {
+      const link = document.createElement("a");
+      link.download = "Happy-Birthday!!!.png";
+      link.href = dataUrl;
+      if (isMobile) {
+        try {
+          const newWindow = window.open();
+          if (newWindow) {
+            newWindow.document.write(
+              `<img src="${dataUrl}" style="max-width:100%;height:auto;" />`,
+            );
+            newWindow.document.title = "Long press to save image";
+          } else {
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+        } catch {
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
         }
-      } catch {
+      } else {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       }
-    } else {
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    } catch (e) {
+      alert("Failed to generate image. Please try again.");
     }
   };
 
   const getInsetShadow = (backgroundColor: string) => {
-    // Use a simpler shadow for better mobile compatibility
     return `0px 0px 10px 0px ${backgroundColor}`;
   };
 
