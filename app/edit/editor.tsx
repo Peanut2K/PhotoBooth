@@ -21,23 +21,7 @@ export const Editor = () => {
   const { images } = useImagesStore((store) => store);
   const elementRef = useRef<HTMLDivElement>(null);
   const [readyImage, setReadyImage] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-
-  // Safety checks
-  if (!photostrip || !background || !filter || images === undefined) {
-    console.warn("Store values not properly initialized:", {
-      photostrip,
-      background,
-      filter,
-      images,
-    });
-
-    return (
-      <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
-        <p className="text-yellow-800">Loading editor...</p>
-      </div>
-    );
-  }
+  const [, setIsGenerating] = useState(false);
 
   // Helper to generate image in background
   const generateImage = async () => {
@@ -157,10 +141,11 @@ export const Editor = () => {
         },
       };
 
-      let dataUrl = await toPng(elementRef.current, options);
+      const dataUrl = await toPng(elementRef.current, options);
       setReadyImage(dataUrl);
     } catch (e) {
       setReadyImage(null);
+      console.error("Error generating image:", e);
     } finally {
       setIsGenerating(false);
     }
@@ -225,6 +210,22 @@ export const Editor = () => {
         <Button asChild className="w-full md:text-xl">
           <Link href="/camera">Camera</Link>
         </Button>
+      </div>
+    );
+  }
+
+  // Safety checks (must be after all hooks)
+  if (!photostrip || !background || !filter || images === undefined) {
+    console.warn("Store values not properly initialized:", {
+      photostrip,
+      background,
+      filter,
+      images,
+    });
+
+    return (
+      <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+        <p className="text-yellow-800">Loading editor...</p>
       </div>
     );
   }
