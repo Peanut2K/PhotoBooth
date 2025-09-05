@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useFiltersStore } from "@/providers/filters-store-provider";
@@ -20,6 +20,8 @@ export const Editor = () => {
     useFiltersStore((store) => store);
   const { images } = useImagesStore((store) => store);
   const elementRef = useRef<HTMLDivElement>(null);
+  const [readyImage, setReadyImage] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // Safety checks
   if (!photostrip || !background || !filter || images === undefined) {
@@ -37,92 +39,20 @@ export const Editor = () => {
     );
   }
 
-  const downloadImage = async () => {
-    if (!elementRef.current) {
-      console.error("Element ref is not available");
-      return;
-    }
-
-    // Check if default stickers are visible and wait for them to load
-    const defaultStickersElement =
-      elementRef.current.querySelector('[style*="opacity"]');
-    if (defaultStickersElement && stickers === null) {
-      const opacity = window.getComputedStyle(defaultStickersElement).opacity;
-      if (opacity === "0") {
-        console.log("Waiting for default stickers to load...");
-
-        // Wait for stickers to load with timeout
-        let attempts = 0;
-        const maxAttempts = 30; // 15 seconds max wait
-
-        while (attempts < maxAttempts) {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          const currentOpacity = window.getComputedStyle(
-            defaultStickersElement,
-          ).opacity;
-          if (currentOpacity === "1") {
-            console.log("Default stickers loaded successfully!");
-            break;
-          }
-          attempts++;
-        }
-
-        if (attempts >= maxAttempts) {
-          console.warn(
-            "Timeout waiting for default stickers to load, proceeding anyway...",
-          );
-        }
-      }
-    }
-
-    // Extra delay to ensure stickers and images are rendered on mobile
-    const isMobileDelay = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    );
-    if (isMobileDelay) {
-      // Wait a bit to ensure all stickers/images are painted
-      await new Promise((resolve) => setTimeout(resolve, 350));
-    }
-
-    // Add loading indicator
-    const loadingIndicator = document.createElement("div");
-    loadingIndicator.textContent = "Generating image...";
-    loadingIndicator.style.position = "fixed";
-    loadingIndicator.style.top = "50%";
-    loadingIndicator.style.left = "50%";
-    loadingIndicator.style.transform = "translate(-50%, -50%)";
-    loadingIndicator.style.padding = "10px";
-    loadingIndicator.style.backgroundColor = "rgba(0,0,0,0.7)";
-    loadingIndicator.style.color = "white";
-    loadingIndicator.style.borderRadius = "5px";
-    loadingIndicator.style.zIndex = "9999";
-
-    try {
-      document.body.appendChild(loadingIndicator);
-    } catch (error) {
-      console.error("Failed to add loading indicator:", error);
-    }
-
-    // Mobile-specific fixes
+  // Helper to generate image in background
+  const generateImage = async () => {
+    if (!elementRef.current) return;
+    setIsGenerating(true);
     const isMobile =
       /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent,
       );
-
-    // Variables for style restoration
-    let originalPhotoStripStyle: string | null = null;
-    let photoStripElement: HTMLElement | null = null;
-
     try {
-      // Make sure all fonts are loaded
       await document.fonts.ready;
-
-      // Force all images to load completely and handle cross-origin issues
       const images = elementRef.current.querySelectorAll("img");
       await Promise.all(
         Array.from(images).map(async (img) => {
           if (img.complete && img.naturalHeight !== 0) return Promise.resolve();
-
           // Set crossOrigin for images
           if (!img.crossOrigin) {
             img.crossOrigin = "anonymous";
@@ -207,19 +137,6 @@ export const Editor = () => {
         await new Promise((resolve) => setTimeout(resolve, 400));
       }
 
-      // Temporarily modify styles for better mobile rendering - improved
-      photoStripElement = elementRef.current.querySelector(
-        '[style*="boxShadow"]',
-      ) as HTMLElement;
-
-      if (isMobile && photoStripElement) {
-        originalPhotoStripStyle = photoStripElement.style.boxShadow;
-        // Instead of removing shadow completely, just reduce it
-        photoStripElement.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
-        // Remove the border that was causing the shadow box effect
-        // photoStripElement.style.border = `3px solid ${background}`;
-      }
-
       const options = {
         cacheBust: true,
         backgroundColor: background,
@@ -240,105 +157,59 @@ export const Editor = () => {
         },
       };
 
-      // Reduced mobile delay since loading is now faster
-      if (isMobile) {
-        await new Promise((resolve) => setTimeout(resolve, 200));
-      }
+      let dataUrl = await toPng(elementRef.current, options);
+      setReadyImage(dataUrl);
+    } catch (e) {
+      setReadyImage(null);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
-      // Try multiple times on mobile if needed
-      let dataUrl;
-      let attempts = 0;
-      const maxAttempts = isMobile ? 3 : 1;
+  // Regenerate image when dependencies change
+  useEffect(() => {
+    if (images.length > 0) {
+      generateImage();
+    } else {
+      setReadyImage(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photostrip, background, filter, dateEnabled, stickers, images]);
 
-      while (attempts < maxAttempts) {
-        try {
-          dataUrl = await toPng(elementRef.current, options);
-
-          // Check if we got a valid data URL
-          if (
-            dataUrl &&
-            typeof dataUrl === "string" &&
-            dataUrl.startsWith("data:")
-          ) {
-            break;
-          }
-          throw new Error("Invalid data URL returned");
-        } catch (attemptError) {
-          attempts++;
-          if (attempts >= maxAttempts) {
-            throw attemptError;
-          }
-          // Wait before retry
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-        }
-      }
-
-      // Create download link
-      const link = document.createElement("a");
-      link.download = "Happy-Birthday!!!.png";
-      link.href = dataUrl ? dataUrl : "";
-
-      // Mobile download handling
-      if (isMobile) {
-        // For mobile, try to open in new window first
-        try {
-          const newWindow = window.open();
-          if (newWindow) {
-            newWindow.document.write(
-              `<img src="${dataUrl}" style="max-width:100%;height:auto;" />`,
-            );
-            newWindow.document.title = "Long press to save image";
-          } else {
-            // Fallback to regular download
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-          }
-        } catch (popupError) {
-          // Final fallback
+  const downloadImage = async () => {
+    if (!readyImage) {
+      alert("Image is not ready yet. Please wait a moment and try again.");
+      return;
+    }
+    const isMobile =
+      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      );
+    const link = document.createElement("a");
+    link.download = "Happy-Birthday!!!.png";
+    link.href = readyImage;
+    if (isMobile) {
+      try {
+        const newWindow = window.open();
+        if (newWindow) {
+          newWindow.document.write(
+            `<img src="${readyImage}" style="max-width:100%;height:auto;" />`,
+          );
+          newWindow.document.title = "Long press to save image";
+        } else {
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-          console.error("Popup blocked, fallback to download", popupError);
         }
-      } else {
-        // Desktop download
+      } catch {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       }
-
-      console.log("Image download initiated successfully");
-
-      // Restore original styles
-      if (isMobile && photoStripElement && originalPhotoStripStyle !== null) {
-        photoStripElement.style.boxShadow = originalPhotoStripStyle;
-        photoStripElement.style.border = "none";
-      }
-    } catch (error) {
-      console.error("Error generating image:", error);
-
-      // More specific error message
-      const isMobile =
-        /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent,
-        );
-      const errorMessage = isMobile
-        ? "Failed to generate image on mobile. Try taking a screenshot instead, or use a desktop browser for better results."
-        : "Failed to generate image. Please refresh your page or try a different browser.";
-
-      alert(errorMessage);
-
-      // Restore original styles in case of error
-      if (isMobile && photoStripElement && originalPhotoStripStyle !== null) {
-        photoStripElement.style.boxShadow = originalPhotoStripStyle;
-        photoStripElement.style.border = "none";
-      }
-    } finally {
-      // Remove loading indicator
-      if (document.body.contains(loadingIndicator)) {
-        document.body.removeChild(loadingIndicator);
-      }
+    } else {
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   };
 
