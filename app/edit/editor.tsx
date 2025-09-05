@@ -178,7 +178,25 @@ export const Editor = () => {
         void elementRef.current.offsetHeight;
         elementRef.current.style.transform = "";
         // Wait even longer to ensure rendering is complete
-        await new Promise((resolve) => setTimeout(resolve, 1200)); // Increased delay
+        await new Promise((resolve) => setTimeout(resolve, 1200));
+        // Force a full repaint using requestAnimationFrame
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        // Wait a bit more
+        await new Promise((resolve) => setTimeout(resolve, 300));
+      }
+
+      // Wait for stickers to be visible (opacity 1)
+      if (isMobile) {
+        const stickersEl = elementRef.current.querySelector('[style*="opacity"]');
+        let stickerAttempts = 0;
+        while (
+          stickersEl &&
+          window.getComputedStyle(stickersEl).opacity !== "1" &&
+          stickerAttempts < 10
+        ) {
+          await new Promise((resolve) => setTimeout(resolve, 200));
+          stickerAttempts++;
+        }
       }
 
       // Force another reflow/repaint and longer delay right before generating the image (mobile only)
