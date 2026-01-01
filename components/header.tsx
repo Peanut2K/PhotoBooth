@@ -20,7 +20,7 @@ export const Header = () => {
     <header className="flex items-center justify-between p-5">
       <Link href="/" className="font-sail">
       <h1 className="font-believe-heart text-center text-3xl md:text-5xl">
-        Always Us
+        AlwaysUs
       </h1>
       </Link>
 
