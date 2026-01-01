@@ -10,11 +10,14 @@ import {
 import { cn } from "@/lib/utils";
 import { Eye } from "lucide-react";
 import Image from "next/image";
-import { AxolotlStickers } from "./axolotl-stickers";
-import { CatStickers } from "./cat-stickers";
-import { PandaStickers } from "./panda-stickers";
+// import { AxolotlStickers } from "./axolotl-stickers";
+// import { CatStickers } from "./cat-stickers";
+// import { PandaStickers } from "./panda-stickers";
 import { DefaultStickers } from "./default-stickers";
 import { FeelGoodSticker } from "./FeelGood";
+import { LoveSticker } from "./Love";
+import { MiniHeartSticker } from "./MiniHeart";
+import { MotherFuckerSticker } from "./MotherFucker";
 
 type Props = {
   background: string;
@@ -84,10 +87,10 @@ export const Preview = ({
               </p>
             )}
           </div>
-          {stickers === "axolotl" && <AxolotlStickers />}
-          {stickers === "cat" && <CatStickers />}
+          {stickers === "axolotl" && <LoveSticker />}
           {stickers === "feelgood" && <FeelGoodSticker />}
-          {stickers === "panda" && <PandaStickers />}
+          {stickers === "cat" && <MiniHeartSticker />}
+          {stickers === "panda" && <MotherFuckerSticker />}
           {stickers === null && <DefaultStickers />}
         </div>
       </DialogContent>
