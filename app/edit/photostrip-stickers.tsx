@@ -3,9 +3,9 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
-import axolotlIcon from "@/public/axolotl-stickers/happy.svg";
-import catIcon from "@/public/cat-stickers/eat.svg";
-import pandaIcon from "@/public/panda-stickers/happy.svg";
+// import axolotlIcon from "@/public/axolotl-stickers/happy.svg";
+// import catIcon from "@/public/cat-stickers/eat.svg";
+// import pandaIcon from "@/public/panda-stickers/happy.svg";
 import fist from "@/public/shared/fist.png";
 import SmileFace from "@/public/shared/smile-face.png";
 import miniHeart from "@/public/shared/mini-icon.png";
