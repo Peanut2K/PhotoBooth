@@ -12,17 +12,7 @@ import Webcam from "react-webcam";
 const TIMER = 4000;
 
 const RANDOM_MSGS = [
-  "You look great!",
-  "You're doing amazing!",
-  "You're a star!",
-  "You're a natural!",
-  "You're a model!",
-  "You're awesome!",
-  "You're fantastic!",
-  "You're a superstar!",
-  "You're a hero!",
-  "You're incredible!",
-  "You're amazing!",
+  "โครตโหดโครตอันตราย!"
 ];
 
 export const WebcamCapture = () => {
@@ -115,7 +105,7 @@ export const WebcamCapture = () => {
           </div>
         )}
         {!isRunning && images.length >= 3 && (
-          <div className="absolute inset-0 z-50 grid place-content-center bg-black text-center text-3xl text-white">
+          <div className="font-bualoy absolute inset-0 z-50 grid place-content-center bg-black text-center text-3xl text-white">
             {RANDOM_MSGS[Math.floor(Math.random() * RANDOM_MSGS.length)]}
           </div>
         )}

@@ -14,6 +14,7 @@ import { AxolotlStickers } from "./axolotl-stickers";
 import { CatStickers } from "./cat-stickers";
 import { PandaStickers } from "./panda-stickers";
 import { DefaultStickers } from "./default-stickers";
+import { FeelGoodSticker } from "./FeelGood";
 
 type Props = {
   background: string;
@@ -22,7 +23,7 @@ type Props = {
   filter: string;
   images: string[];
   dateEnabled: boolean;
-  stickers: "axolotl" | "cat" | "panda" | null;
+  stickers: "axolotl" | "cat" | "panda" | "feelgood" | null;
 };
 
 export const Preview = ({
@@ -85,6 +86,7 @@ export const Preview = ({
           </div>
           {stickers === "axolotl" && <AxolotlStickers />}
           {stickers === "cat" && <CatStickers />}
+          {stickers === "feelgood" && <FeelGoodSticker />}
           {stickers === "panda" && <PandaStickers />}
           {stickers === null && <DefaultStickers />}
         </div>

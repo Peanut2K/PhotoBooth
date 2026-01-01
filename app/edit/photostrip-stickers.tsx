@@ -7,6 +7,10 @@ import axolotlIcon from "@/public/axolotl-stickers/happy.svg";
 import catIcon from "@/public/cat-stickers/eat.svg";
 import pandaIcon from "@/public/panda-stickers/happy.svg";
 import fist from "@/public/shared/fist.png";
+import SmileFace from "@/public/shared/smile-face.png";
+import miniHeart from "@/public/shared/mini-icon.png";
+import love from "@/public/shared/love-icon.png";
+import chad from "@/public/shared/Chad-Icon.png";
 import { useFiltersStore } from "@/providers/filters-store-provider";
 import { cn } from "@/lib/utils";
 
@@ -23,8 +27,19 @@ export const PhotostripStickers = () => {
           stickers === "axolotl" && "border-2 border-[#72b86d]",
         )}
       >
-        <Image src={axolotlIcon} alt="" className="w-10" />
+        <Image src={love} alt="" className="w-10" />
         <span className="sr-only">Axolotl stickers</span>
+      </Button>
+      <Button
+        onClick={() => setStickers("feelgood")}
+        variant="ghost"
+        className={cn(
+          "h-auto",
+          stickers === "feelgood" && "border-2 border-[#72b86d]",
+        )}
+      >
+        <Image src={chad} alt="" className="w-10" />
+        <span className="sr-only">Feel Good stickers</span>
       </Button>
       <Button
         onClick={() => setStickers("cat")}
@@ -34,7 +49,7 @@ export const PhotostripStickers = () => {
           stickers === "cat" && "border-2 border-[#72b86d]",
         )}
       >
-        <Image src={catIcon} alt="" className="w-10" />
+        <Image src={miniHeart} alt="" className="w-10" />
         <span className="sr-only">Cat stickers</span>
       </Button>
       <Button
@@ -45,7 +60,7 @@ export const PhotostripStickers = () => {
           stickers === "panda" && "border-2 border-[#72b86d]",
         )}
       >
-        <Image src={pandaIcon} alt="" className="w-10" />
+        <Image src={SmileFace} alt="" className="w-10" />
         <span className="sr-only">Panda stickers</span>
       </Button>
       <Button

@@ -14,6 +14,10 @@ import { AxolotlStickers } from "./axolotl-stickers";
 import { CatStickers } from "./cat-stickers";
 import { PandaStickers } from "./panda-stickers";
 import { DefaultStickers } from "./default-stickers";
+import { MiniHeartSticker } from "./MiniHeart";
+import { MotherFuckerSticker } from "./MotherFucker";
+import { LoveSticker } from "./Love";
+import { FeelGoodSticker } from "./FeelGood";
 
 export const Editor = () => {
   const { photostrip, background, filter, dateEnabled, stickers } =
@@ -364,9 +368,10 @@ export const Editor = () => {
               </p>
             )}
           </div>
-          {stickers === "axolotl" && <AxolotlStickers />}
-          {stickers === "cat" && <CatStickers />}
-          {stickers === "panda" && <PandaStickers />}
+          {stickers === "axolotl" && <LoveSticker />}
+          {stickers === "feelgood" && <FeelGoodSticker />}
+          {stickers === "cat" && <MiniHeartSticker />}
+          {stickers === "panda" && <MotherFuckerSticker />}
           {stickers === null && <DefaultStickers />}
         </div>
       </div>

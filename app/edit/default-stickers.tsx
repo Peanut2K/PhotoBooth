@@ -145,7 +145,7 @@ export const DefaultStickers = () => {
         onError={(e) => handleImageError("cake3", e)}
         style={{ display: "block" }}
       />
-      <img
+      {/* <img
         src={getSrc(HBD)}
         alt=""
         crossOrigin="anonymous"
@@ -154,7 +154,7 @@ export const DefaultStickers = () => {
         onLoad={() => handleImageLoad("HBD")}
         onError={(e) => handleImageError("HBD", e)}
         style={{ display: "block" }}
-      />
+      /> */}
     </div>
   );
 };

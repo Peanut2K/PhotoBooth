@@ -25,6 +25,12 @@ const believeHeart = localFont({
   display: "swap",
 });
 
+const bualoy = localFont({
+  src: "./fonts/bualoy.ttf",
+  variable: "--font-bualoy",
+  display: "swap",
+});
+
 const websiteUrl = "https://bubblybooth.vercel.app";
 const imageUrl = "./public/bubblybooth.png";
 
@@ -105,7 +111,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${sail.variable} ${misoRegular.variable} ${believeHeart.variable} font-miso bg-vintage-gold/25 grid min-h-dvh grid-rows-[auto_1fr_auto] antialiased`}
+        className={`${sail.variable} ${misoRegular.variable} ${believeHeart.variable} ${bualoy.variable} font-miso bg-vintage-gold/25 grid min-h-dvh grid-rows-[auto_1fr_auto] antialiased`}
       >
         <Header />
         <FiltersStoreProvider>

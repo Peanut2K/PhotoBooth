@@ -19,7 +19,9 @@ export const Header = () => {
   return (
     <header className="flex items-center justify-between p-5">
       <Link href="/" className="font-sail">
-        Booth
+      <h1 className="font-believe-heart text-center text-3xl md:text-5xl">
+        Always Us
+      </h1>
       </Link>
 
       {/* <Dialog>

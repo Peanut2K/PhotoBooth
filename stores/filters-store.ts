@@ -5,7 +5,7 @@ export type FiltersState = {
   background: string;
   filter: string;
   dateEnabled: boolean;
-  stickers: "axolotl" | "cat" | "panda" | null;
+  stickers: "axolotl" | "cat" | "panda" | "feelgood" | null;
 };
 
 export type FiltersActions = {
@@ -13,7 +13,7 @@ export type FiltersActions = {
   setBackground: (background: string) => void;
   setFilter: (filter: string) => void;
   setDateEnabled: () => void;
-  setStickers: (stickers: "axolotl" | "cat" | "panda" | null) => void;
+  setStickers: (stickers: "axolotl" | "cat" | "panda" | "feelgood" | null) => void;
 };
 
 export type FiltersStore = FiltersState & FiltersActions;

@@ -12,14 +12,13 @@ import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
 import Link from "next/link";
+import { MusicPlayerWrapper } from "@/components/music-player-wrapper";
 // import { navigateTo } from "./lib/navigation";
 
 export default function Home() {
   return (
     <main className="flex flex-col space-y-5 place-self-center">
-      <h1 className="font-believe-heart text-center text-3xl md:text-5xl">
-        PhotoBooth
-      </h1>
+      <MusicPlayerWrapper />
       <Dialog>
         <DialogTrigger asChild>
           <Button className="bg-vintage-green px-8 py-6 text-xl font-bold text-white uppercase">
