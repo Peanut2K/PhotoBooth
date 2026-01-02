@@ -111,7 +111,7 @@ export const MiniHeartSticker = () => {
         alt=""
         crossOrigin="anonymous"
         loading="eager"
-        className="absolute top-90 right-1 w-40"
+        className="absolute top-100 right-1 w-40"
         onLoad={() => handleImageLoad("chat1")}
         onError={(e) => handleImageError("chat1", e)}
         style={{ display: "block" }}
@@ -121,7 +121,7 @@ export const MiniHeartSticker = () => {
         alt=""
         crossOrigin="anonymous"
         loading="eager"
-        className="absolute top-40 left-0 w-40"
+        className="absolute top-50 left-0 w-40"
         onLoad={() => handleImageLoad("oat2")}
         onError={(e) => handleImageError("oat1", e)}
         style={{ display: "block" }}

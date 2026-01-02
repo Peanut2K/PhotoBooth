@@ -12,7 +12,9 @@ import Webcam from "react-webcam";
 const TIMER = 4000;
 
 const RANDOM_MSGS = [
-  "โครตโหดโครตอันตราย!"
+  "โครตโหดโครตอันตราย!",
+  "โครตเท่เลยฮับพรี่!",
+  "เต็ม 100 อย่างน้อยต้อง 99.99",
 ];
 
 export const WebcamCapture = () => {

@@ -306,6 +306,87 @@ export const Editor = () => {
     return `0px 0px 10px 0px ${backgroundColor}`;
   };
 
+  // Function to get contrasting text color based on background and photostrip combination
+  const getTextColor = (bgColor: string, photostripColor: string) => {
+    // Define text color based on background + photostrip combination
+    const colorKey = `${bgColor}-${photostripColor}`;
+    
+    // Specific color combinations
+    const specificPairs: { [key: string]: string } = {
+      // Background: Light cream (#F6F0F0)
+      "#F6F0F0-#000": "#000",          // Light bg + Black photostrip -> Black text
+      "#F6F0F0-#F6F0F0": "#666",       // Light bg + Light photostrip -> Dark gray text
+      "#F6F0F0-#F2E2B1": "#8B4513",    // Light bg + Cream photostrip -> Saddle brown text
+      "#F6F0F0-#C7D9DD": "#1a3a52",    // Light bg + Light blue photostrip -> Dark blue text
+      "#F6F0F0-#EEF1DA": "#4a6741",    // Light bg + Light green photostrip -> Dark green text
+      "#F6F0F0-#EDE8DC": "#6b5744",    // Light bg + Beige photostrip -> Dark brown text
+      "#F6F0F0-#FDB7EA": "#8B008B",    // Light bg + Pink photostrip -> Dark magenta text
+      
+      // Background: Cream (#F2E2B1)
+      "#F2E2B1-#000": "#000",          // Cream bg + Black photostrip -> Black text
+      "#F2E2B1-#F6F0F0": "#000",       // Cream bg + Light photostrip -> Black text
+      "#F2E2B1-#F2E2B1": "#654321",    // Cream bg + Cream photostrip -> Dark brown text
+      "#F2E2B1-#C7D9DD": "#1a3a52",    // Cream bg + Light blue photostrip -> Dark blue text
+      "#F2E2B1-#EEF1DA": "#4a6741",    // Cream bg + Light green photostrip -> Dark green text
+      "#F2E2B1-#EDE8DC": "#000",       // Cream bg + Beige photostrip -> Black text
+      "#F2E2B1-#FDB7EA": "#8B008B",    // Cream bg + Pink photostrip -> Dark magenta text
+      
+      // Background: Light blue (#C7D9DD)
+      "#C7D9DD-#000": "#000",          // Light blue bg + Black photostrip -> Black text
+      "#C7D9DD-#F6F0F0": "#1a3a52",    // Light blue bg + Light photostrip -> Dark blue text
+      "#C7D9DD-#F2E2B1": "#000",       // Light blue bg + Cream photostrip -> Black text
+      "#C7D9DD-#C7D9DD": "#0a2a42",    // Light blue bg + Light blue photostrip -> Very dark blue text
+      "#C7D9DD-#EEF1DA": "#4a6741",    // Light blue bg + Light green photostrip -> Dark green text
+      "#C7D9DD-#EDE8DC": "#000",       // Light blue bg + Beige photostrip -> Black text
+      "#C7D9DD-#FDB7EA": "#8B008B",    // Light blue bg + Pink photostrip -> Dark magenta text
+      
+      // Background: Light green (#EEF1DA)
+      "#EEF1DA-#000": "#000",          // Light green bg + Black photostrip -> Black text
+      "#EEF1DA-#F6F0F0": "#4a6741",    // Light green bg + Light photostrip -> Dark green text
+      "#EEF1DA-#F2E2B1": "#000",       // Light green bg + Cream photostrip -> Black text
+      "#EEF1DA-#C7D9DD": "#1a3a52",    // Light green bg + Light blue photostrip -> Dark blue text
+      "#EEF1DA-#EEF1DA": "#2a4721",    // Light green bg + Light green photostrip -> Very dark green text
+      "#EEF1DA-#EDE8DC": "#000",       // Light green bg + Beige photostrip -> Black text
+      "#EEF1DA-#FDB7EA": "#8B008B",    // Light green bg + Pink photostrip -> Dark magenta text
+      
+      // Background: Beige (#EDE8DC)
+      "#EDE8DC-#000": "#000",          // Beige bg + Black photostrip -> Black text
+      "#EDE8DC-#F6F0F0": "#6b5744",    // Beige bg + Light photostrip -> Dark brown text
+      "#EDE8DC-#F2E2B1": "#000",       // Beige bg + Cream photostrip -> Black text
+      "#EDE8DC-#C7D9DD": "#1a3a52",    // Beige bg + Light blue photostrip -> Dark blue text
+      "#EDE8DC-#EEF1DA": "#4a6741",    // Beige bg + Light green photostrip -> Dark green text
+      "#EDE8DC-#EDE8DC": "#4b4744",    // Beige bg + Beige photostrip -> Very dark brown text
+      "#EDE8DC-#FDB7EA": "#8B008B",    // Beige bg + Pink photostrip -> Dark magenta text
+      
+      // Background: Pink (#FDB7EA)
+      "#FDB7EA-#000": "#8B008B",       // Pink bg + Black photostrip -> Dark magenta text
+      "#FDB7EA-#F6F0F0": "#8B008B",    // Pink bg + Light photostrip -> Dark magenta text
+      "#FDB7EA-#F2E2B1": "#8B008B",    // Pink bg + Cream photostrip -> Dark magenta text
+      "#FDB7EA-#C7D9DD": "#8B008B",    // Pink bg + Light blue photostrip -> Dark magenta text
+      "#FDB7EA-#EEF1DA": "#8B008B",    // Pink bg + Light green photostrip -> Dark magenta text
+      "#FDB7EA-#EDE8DC": "#8B008B",    // Pink bg + Beige photostrip -> Dark magenta text
+      "#FDB7EA-#FDB7EA": "#6B006B",    // Pink bg + Pink photostrip -> Very dark magenta text
+      
+      // Background: Black (#000)
+      "#000-#000": "#CCC",             // Black bg + Black photostrip -> Light gray text
+      "#000-#F6F0F0": "#F6F0F0",       // Black bg + Light photostrip -> Light cream text
+      "#000-#F2E2B1": "#F2E2B1",       // Black bg + Cream photostrip -> Cream text
+      "#000-#C7D9DD": "#C7D9DD",       // Black bg + Light blue photostrip -> Light blue text
+      "#000-#EEF1DA": "#EEF1DA",       // Black bg + Light green photostrip -> Light green text
+      "#000-#EDE8DC": "#EDE8DC",       // Black bg + Beige photostrip -> Beige text
+      "#000-#FDB7EA": "#FDB7EA",       // Black bg + Pink photostrip -> Pink text
+    };
+    
+    return specificPairs[colorKey] || "#000"; // Default to black if combination not found
+  };
+
+  // Function to check if we need dark background for overlay text
+  const needsDarkOverlay = (bgColor: string) => {
+    // Light colors that need dark overlay for white text to be visible
+    const lightColors = ["#F6F0F0", "#F2E2B1", "#C7D9DD", "#EEF1DA", "#EDE8DC"];
+    return lightColors.includes(bgColor);
+  };
+
   if (images.length === 0) {
     return (
       <div className="space-y-3 rounded-xl border border-black p-5">
@@ -326,8 +407,14 @@ export const Editor = () => {
           className="relative mx-auto w-fit p-6"
           style={{ backgroundColor: background }}
         >
+          {/* Header text */}
+          <div className="mb-4 text-center">
+            <p className="font-believe-heart text-4xl" style={{ color: getTextColor(background, photostrip) }}>
+              AlwaysUs
+            </p>
+          </div>
           <div
-            className="grid gap-4 rounded p-4"
+            className="relative grid gap-4 rounded p-4"
             style={{
               backgroundColor: photostrip,
               boxShadow: getInsetShadow(background),
@@ -356,6 +443,14 @@ export const Editor = () => {
                     e.currentTarget.crossOrigin = "";
                   }}
                 />
+                {/* Text overlay on last image */}
+                {index === 2 && (
+                  <div className="absolute bottom-2 right-2">
+                    <p className="font-believe-heart text-lg text-white" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+                      and StillUs
+                    </p>
+                  </div>
+                )}
               </div>
             ))}
             {dateEnabled && (
@@ -385,6 +480,8 @@ export const Editor = () => {
           photostrip={photostrip}
           dateEnabled={dateEnabled}
           stickers={stickers}
+          getTextColor={getTextColor}
+          needsDarkOverlay={needsDarkOverlay}
         />
 
         <Button

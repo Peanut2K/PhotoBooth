@@ -81,7 +81,7 @@ export function MusicPlayer({ coverImage }: MusicPlayerProps) {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <div className="bg-gradient-to-r from-teal-600 to-teal-700 rounded-2xl shadow-2xl overflow-hidden">
+      <div className="bg-[#8AC6D1] rounded-2xl shadow-2xl overflow-hidden">
         <div className="flex items-center gap-4 p-4">
           {/* Album Cover - แสดงเฉพาะเมื่อมีรูป */}
           {coverImage && (

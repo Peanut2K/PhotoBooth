@@ -27,6 +27,8 @@ type Props = {
   images: string[];
   dateEnabled: boolean;
   stickers: "axolotl" | "cat" | "panda" | "feelgood" | null;
+  getTextColor: (bgColor: string, photostripColor: string) => string;
+  needsDarkOverlay: (bgColor: string) => boolean;
 };
 
 export const Preview = ({
@@ -37,6 +39,8 @@ export const Preview = ({
   photostrip,
   dateEnabled,
   stickers,
+  getTextColor,
+  needsDarkOverlay,
 }: Props) => {
   return (
     <Dialog>
@@ -57,8 +61,14 @@ export const Preview = ({
           className="relative mx-auto w-fit p-6"
           style={{ backgroundColor: background }}
         >
+          {/* Header text */}
+          <div className="mb-4 text-center">
+            <p className="font-believe-heart text-4xl" style={{ color: getTextColor(background, photostrip) }}>
+              AlwaysUs
+            </p>
+          </div>
           <div
-            className="grid gap-4 rounded p-4"
+            className="relative grid gap-4 rounded p-4"
             style={{
               backgroundColor: photostrip,
               boxShadow: getInsetShadow(background),
@@ -75,6 +85,14 @@ export const Preview = ({
                     filter,
                   )}
                 />
+                {/* Text overlay on last image */}
+                {index === 2 && (
+                  <div className="absolute bottom-2 right-2">
+                    <p className="font-believe-heart text-lg text-white" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
+                      and StillUs
+                    </p>
+                  </div>
+                )}
               </div>
             ))}
             {dateEnabled && (
