@@ -31,76 +31,8 @@ const bualoy = localFont({
   display: "swap",
 });
 
-const websiteUrl = "https://bubblybooth.vercel.app";
-const imageUrl = "./public/bubblybooth.png";
-
 export const metadata: Metadata = {
   title: "Happy Birthday !!!",
-  description:
-    "",
-  metadataBase: new URL(websiteUrl),
-  openGraph: {
-    type: "website",
-    url: websiteUrl,
-    title: "",
-    siteName: "AlwaysUs",
-    description:
-      "",
-    images: [
-      {
-        url: imageUrl,
-        width: 1200,
-        height: 630,
-        alt: "AlwaysUs",
-      },
-    ],
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "AlwaysUs",
-    description:
-      "",
-    images: [imageUrl],
-  },
-  keywords: [
-    "photobooth",
-    "vintage",
-    "retro",
-    "filters",
-    "memories",
-    "nostalgia",
-    "fun",
-    "photography",
-    "camera",
-    "photos",
-    "pictures",
-    "snapshots",
-    "celebration",
-    "special occasion",
-    "friends",
-    "family",
-    "joy",
-    "laughter",
-    "magic",
-    "customizable",
-    "aesthetic",
-    "modern",
-    "twist",
-    "snap",
-    "smile",
-    "sparkle",
-    "memories",
-    "forever",
-    "click",
-    "time",
-  ],
-  authors: [
-    {
-      name: "Oat",
-      url: "https://brianmillonte.vercel.app/",
-    },
-  ],
 };
 
 export default function RootLayout({
