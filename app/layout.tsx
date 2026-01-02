@@ -51,16 +51,16 @@ export const metadata: Metadata = {
         url: imageUrl,
         width: 1200,
         height: 630,
-        alt: "BubblyBooth - Vintage Photobooth Experience",
+        alt: "AlwaysUs",
       },
     ],
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "BubblyBooth - Vintage Photobooth Experience",
+    title: "AlwaysUs",
     description:
-      "Step into a world of vintage charm and playful memories! ✨ Bubbly Booth is your go-to photobooth experience, where every snapshot is filled with joy, laughter, and a touch of retro magic. Whether you're celebrating a special occasion or just capturing fun moments with friends, our customizable and aesthetic filters bring your photos to life with a nostalgic yet modern twist. 📷 Snap. Smile. Sparkle. Let's make memories that last forever—one bubbly click at a time!",
+      "",
     images: [imageUrl],
   },
   keywords: [
@@ -97,7 +97,7 @@ export const metadata: Metadata = {
   ],
   authors: [
     {
-      name: "Briuwu",
+      name: "Oat",
       url: "https://brianmillonte.vercel.app/",
     },
   ],
